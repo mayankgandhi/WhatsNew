@@ -9,49 +9,56 @@ import SwiftUI
 
 struct ContentView: View {
   
-  @ObservedObject var viewModels = ListItemViewModel("Ghana", "300")
-
-//  [
-//    ListItemViewModel("Ghana", "300"),
-//    ListItemViewModel("Ethiopia", "302"),
-//    ListItemViewModel("Egypt", "303"),
-//    ListItemViewModel("Ghana", "304"),
-//    ListItemViewModel("Ghana", "305")
-//  ]
+  @StateObject var itemViewModel = ListItemViewModel(ListItem("Nigeria", "300"))
+  @StateObject var viewModel = ListViewModel()
   
-  func fetchThumbnailUsingAwait(for viewModel: ListItemViewModel) async {
+  private func fetchThumbnailUsingAwait(for listItem: ListItemViewModel) async {
     do {
-      try await viewModel.asyncFetchThumbnail()
+      try await listItem.asyncFetchThumbnail()
     } catch  {
       print(error.localizedDescription)
     }
   }
   
-    var body: some View {
-      NavigationView {
-        List {
-          ForEach([viewModels]) { viewModel in
-            HStack(spacing: 10) {
-              Image(uiImage: viewModel.thumbnail ?? UIImage())
-                .resizable()
-                .frame(width: 100, height: 100, alignment: .center)
-              Text(viewModel.title)
-              Spacer()
-            }
-//            .onAppear(perform: viewModel.fetchThumbnail)
-            .onAppear(perform: {
-              async {
-                await fetchThumbnailUsingAwait(for: viewModel)
-              }
-            })
+  private func fetchAllThumbnailsUsingTaskGroup() async {
+    do {
+      try await viewModel.fetchAllThumbnails()
+    } catch  {
+      print(error.localizedDescription)
+    }
+  }
+  
+  var body: some View {
+    NavigationView {
+      List {
+        ForEach(viewModel.viewModels) { listItem in
+          HStack(spacing: 10) {
+            Image(uiImage: listItem.thumbnail ?? UIImage())
+              .resizable()
+              .frame(width: 100, height: 100, alignment: .center)
+            Text(listItem.title)
+            Spacer()
           }
+//          .onAppear(perform: listItem.fetchThumbnail)
+//          .onAppear {
+//            async {
+//              await fetchThumbnailUsingAwait(for: listItem)
+//            }
+//          }
+          
+        }
+      }
+      .onAppear {
+        async {
+          await fetchAllThumbnailsUsingTaskGroup()
         }
       }
     }
+  }
 }
 
 struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+  static var previews: some View {
+    ContentView()
+  }
 }

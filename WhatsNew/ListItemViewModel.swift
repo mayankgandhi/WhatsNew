@@ -16,26 +16,26 @@ enum FetchError: Error {
 public class ListItemViewModel: ObservableObject, Identifiable {
   
   @Published var thumbnail: UIImage?
-  /// Identifier used for `List` and for fetching unique images.
-  public let id: String
-  /// `title` of the ListItem
-  public let title: String
   
-  init(_ title: String, _ id: String) {
-    self.title = title
+  let item: ListItem
+  
+  public var title: String {
+    item.title
+  }
+  
+  init(_ item: ListItem) {
+    self.item = item
     self.thumbnail = nil
-    self.id = id
   }
   
   private func thumbnailURLRequest(for id: String) -> URLRequest {
     let url =  URL(string: "https://picsum.photos")!
       .appendingPathComponent("/300")
-    print(url)
-    return URLRequest(url: url)
+   return URLRequest(url: url)
   }
   
   func fetchThumbnail() {
-    fetchThumbnail(for: id) { image, error in
+    fetchThumbnail(for: item.id) { image, error in
       guard error == nil else {
         print(error!)
         return
@@ -47,8 +47,12 @@ public class ListItemViewModel: ObservableObject, Identifiable {
   }
   
   func asyncFetchThumbnail() async throws {
-    async let thumbnailImage = try fetchThumbnail(for: id)
-    self.thumbnail = try await thumbnailImage
+    async let thumbnailImage = try fetchThumbnail(for: item.id)
+    let image = try await thumbnailImage
+    DispatchQueue.main.async {
+      self.thumbnail = image
+      print(self.thumbnail)
+    }
   }
   
   func fetchThumbnail(
