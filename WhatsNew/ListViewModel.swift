@@ -38,5 +38,5 @@ class ListViewModel: ObservableObject {
       self.viewModels.shuffle()
     }
   }
-  
+ 
 }
