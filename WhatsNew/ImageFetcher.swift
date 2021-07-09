@@ -1,58 +1,19 @@
 //
-//  ListItemViewModel.swift
+//  ImageFetcher.swift
 //  WhatsNew
 //
 //  Created by Mayank Gandhi on 09/07/21.
 //
 
 import Foundation
-import SwiftUI
 import UIKit
 
-enum FetchError: Error {
-  case badID, badImage
-}
-
-public class ListItemViewModel: ObservableObject, Identifiable {
+final class ImageFetcher {
   
-  @Published var thumbnail: UIImage?
-  
-  let item: ListItem
-  
-  public var title: String {
-    item.title
-  }
-  
-  init(_ item: ListItem) {
-    self.item = item
-    self.thumbnail = nil
-  }
-  
-  private func thumbnailURLRequest(for id: String) -> URLRequest {
+  func thumbnailURLRequest(for id: String) -> URLRequest {
     let url =  URL(string: "https://picsum.photos")!
       .appendingPathComponent("/300")
-   return URLRequest(url: url)
-  }
-  
-  func fetchThumbnail() {
-    fetchThumbnail(for: item.id) { image, error in
-      guard error == nil else {
-        print(error!)
-        return
-      }
-      DispatchQueue.main.async {
-        self.thumbnail = image
-      }
-    }
-  }
-  
-  func asyncFetchThumbnail() async throws {
-    async let thumbnailImage = try fetchThumbnail(for: item.id)
-    let image = try await thumbnailImage
-    DispatchQueue.main.async {
-      self.thumbnail = image
-      print(self.thumbnail)
-    }
+    return URLRequest(url: url)
   }
   
   func fetchThumbnail(

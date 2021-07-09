@@ -15,3 +15,11 @@ struct WhatsNewApp: App {
         }
     }
 }
+
+import Resolver
+
+extension Resolver: ResolverRegistering {
+  public static func registerAllServices() {
+    register { ImageFetcher() }.scope(.shared)
+  }
+}

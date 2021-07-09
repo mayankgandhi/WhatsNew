@@ -7,10 +7,12 @@
 
 import Foundation
 import SwiftUI
+import Resolver
 
 class ListViewModel: ObservableObject {
   
   @Published var viewModels = [ListItemViewModel]()
+  @Injected var imageFetcher: ImageFetcher
   
   let items: [ListItem]
   
@@ -26,6 +28,7 @@ class ListViewModel: ObservableObject {
     }
   }
   
+  /// An Example of Structured Concurrency where the Asynchronous Task Handling is done at Compile time
   func fetchAllThumbnails() async throws {
     await withThrowingTaskGroup(of: Void.self) { group in
       for viewModel in viewModels {
