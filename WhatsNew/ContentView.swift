@@ -17,9 +17,11 @@ struct ContentView: View {
   var body: some View {
     NavigationView {
       List {
-        ForEach(viewModel.viewModels.filter({ item in
+        ForEach(
+          viewModel.viewModels.filter({ item in
           item.title.hasPrefix(searchText)
-        })) { listItem in
+        })
+        ) { listItem in
           HStack(spacing: 10) {
             Image(uiImage: listItem.thumbnail ?? UIImage())
               .resizable()
@@ -27,12 +29,12 @@ struct ContentView: View {
             Text(listItem.title)
             Spacer()
           }
-//          .onAppear(perform: listItem.fetchThumbnailWithCompletion)
-//          .onAppear {
-//            async {
-//              await fetchThumbnailUsingAwait(for: listItem)
-//            }
-//          }
+//                    .onAppear(perform: listItem.fetchThumbnailWithCompletion)
+//                    .onAppear {
+//                      async {
+//                        await fetchThumbnailUsingAwait(for: listItem)
+//                      }
+//                    }
         }
       }
       .onAppear {
